@@ -29,7 +29,6 @@ mongoose.connect(process.env.DATABASE, {
 .then(() => console.log('Connected to DB'))
 
 
-
 // Mount Routes
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
