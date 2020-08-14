@@ -1,36 +1,21 @@
 const Tour = require('../models/Tour')
+const ApiFeatures = require('../utils/apiFeatures')
+
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5'
+  req.query.sort = 'price'
+  next()
+}
 
 exports.getAllTours = async (req, res) => {
   try {
-    const queryObj = {...req.query}
-    const excludeFields = ['page', 'sort', 'limit', 'fields']
-    excludeFields.forEach(el => delete queryObj[el])
+    const features = new ApiFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate()
 
-    //Create query string
-    let queryStr = JSON.stringify(queryObj)
-
-    //create Operators ($gt, $gte, etc)
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
-
-    let query = Tour.find(JSON.parse(queryStr))
-
-    // Sort By selected field or by default by created field in descending order
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ')
-      query = query.sort(sortBy)
-    } else {
-      query = query.sort('-createdAt')
-    }
-
-    // Select fields
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ')
-      query = query.select(fields)
-    } else {
-      query = query.select('-__v')
-    }
-
-    const tours = await query
+    const tours = await features.query
 
     res
       .status(200)
@@ -110,6 +95,43 @@ exports.deleteTour = async(req, res) => {
       .json({
         status: 'success',
         data: null
+      })
+  } catch (err) {
+    res.status(400).json({
+      status: 'failed',
+      message: err
+    })
+  }
+}
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: {ratingsAverage: {$gt: 4}}
+      },
+      {
+        $group: {
+          _id: '$difficulty',
+          num: {$sum: 1},
+          avgRating: {$avg: '$ratingsAverage'},
+          avgPrice: {$avg: '$price'},
+          minPrice: {$min: '$price'},
+          maxPrice: {$max: '$price'}
+        }
+      },
+      {
+        $sort: {_id: -1}
+      },
+      {
+        $match: {_id: 'easy'}
+      }
+    ])
+    res
+      .status(200)
+      .json({
+        status: 'success',
+        data: stats
       })
   } catch (err) {
     res.status(400).json({

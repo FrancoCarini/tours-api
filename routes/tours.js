@@ -5,8 +5,14 @@ const {
   createTour,
   getTour,
   updateTour,
-  deleteTour
+  deleteTour,
+  aliasTopTours,
+  getTourStats
 } = require('../controllers/tours')
+
+router.get('/top-5-cheap', aliasTopTours, getAllTours)
+
+router.get('/tour-stats',getTourStats)
 
 router
   .route('/')
