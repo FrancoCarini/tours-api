@@ -7,12 +7,14 @@ const {
   updateTour,
   deleteTour,
   aliasTopTours,
-  getTourStats
+  getTourStats,
+  getMonthlyPlan
 } = require('../controllers/tours')
 
 router.get('/top-5-cheap', aliasTopTours, getAllTours)
 
 router.get('/tour-stats',getTourStats)
+router.get('/monthly-plan/:year',getMonthlyPlan)
 
 router
   .route('/')
