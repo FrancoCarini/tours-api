@@ -8,6 +8,12 @@ const {
   deleteUser
 } = require('../controllers/users')
 
+const {
+  signup
+} = require('../controllers/auth')
+
+router.post('/signup', signup)
+
 router
   .route('/')
   .get(getAllUsers)
