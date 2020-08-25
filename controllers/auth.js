@@ -56,7 +56,7 @@ exports.login = async (req, res, next) => {
   })
 }
 
-exports.protect = catchAsync((req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
   // Get token and check if exists
   let token
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -64,7 +64,7 @@ exports.protect = catchAsync((req, res, next) => {
   }
 
   if (!token) {
-    return next(new AppError('Your are not logged in. Please login to get access'), 401)
+    return next(new AppError('Your are not logged in. Please login to get access', 401))
   }
 
   // Verify Token
@@ -79,10 +79,20 @@ exports.protect = catchAsync((req, res, next) => {
 
   // Check if user changes password after the token was issued
   if (user.changePasswordAfter(decoded.iat)) {
-    return next(new AppError('User recently changed password. Please login again.'), 401)
+    return next(new AppError('User recently changed password. Please login again.', 401))
   }
 
   // Grant access to protected route
   req.user = user
   next()
 })
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles is an Array EX: ['admin', 'guide']
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('You dont have permission to perform this action', 403))
+    }
+    next()
+  }
+}

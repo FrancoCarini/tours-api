@@ -11,20 +11,22 @@ const {
   getMonthlyPlan
 } = require('../controllers/tours')
 
+const { protect, restrictTo } = require('../controllers/auth')
+
 router.get('/top-5-cheap', aliasTopTours, getAllTours)
 
 router.get('/tour-stats',getTourStats)
-router.get('/monthly-plan/:year',getMonthlyPlan)
+router.get('/monthly-plan/:year', protect, getMonthlyPlan)
 
 router
   .route('/')
   .get(getAllTours)
-  .post(createTour)
+  .post(protect, restrictTo('admin'),createTour)
 
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour)
+  .patch(protect, restrictTo('admin'), updateTour)
+  .delete(protect, restrictTo('admin'), deleteTour)
 
 module.exports = router
