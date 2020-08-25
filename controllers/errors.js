@@ -51,6 +51,8 @@ module.exports = (err, req, res, next) => {
       error = new AppError(`Duplicate Field ${keyValueDuplicated}`, 400)
     }
     if (error.name === 'ValidationError') error = handleValidationErrorDB(error)
+    if (error.name === 'JsonWebTokenError') error = new AppError('Invalid Token. Please login again.', 401)
+    if (error.name === 'TokenExpiredError') error = new AppError('Token Expired. Please login again.', 401)
     sendErrorProd(error, res)
   }
 }
