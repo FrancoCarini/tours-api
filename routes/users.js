@@ -9,10 +9,12 @@ const {
 } = require('../controllers/users')
 
 const {
-  signup
+  signup,
+  login
 } = require('../controllers/auth')
 
 router.post('/signup', signup)
+router.post('/login', login)
 
 router
   .route('/')
