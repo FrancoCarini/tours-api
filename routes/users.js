@@ -10,11 +10,16 @@ const {
 
 const {
   signup,
-  login
+  login,
+  forgotPassword,
+  resetPassword
 } = require('../controllers/auth')
 
 router.post('/signup', signup)
 router.post('/login', login)
+
+router.post('/forgotPassword', forgotPassword)
+router.post('/resetPassword/:token', resetPassword)
 
 router
   .route('/')
