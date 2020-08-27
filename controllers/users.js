@@ -1,19 +1,52 @@
-exports.getAllUsers = async (req, res) => {
+const User = require('../models/User')
+const catchAsync = require('../utils/catchAsync')
+const AppError = require('../utils/appError')
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObject = {}
+  Object.keys(obj).forEach(el => {
+    if (allowedFields.includes(el)) {
+      newObject[el] = obj[el]
+    }
+  })
+  return newObject
 }
 
-exports.createUser = async(req, res) => {
+exports.updateMe = catchAsync(async(req, res, next) => {
+  // Create error if password fields are in body
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(new AppError('This route is not for updating password', 400))
+  }
 
-}
+  // Filter fields
+  const filteredBody = filterObj(req.body, 'name', 'email')
 
-exports.getUser = async(req, res) => {
+  // Update user
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true
+  })
 
-}
+  res.status(200).json({
+    status: 'success',
+    data: updatedUser
+  })
+})
 
-exports.updateUser = async(req, res) => {
+exports.deleteMe = catchAsync(async(req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {active: false})
 
-}
+  res.status(204).json({
+    status: 'success',
+    data: null
+  })
+})
 
-exports.deleteUser = async(req, res) => {
+exports.getAllUsers = catchAsync(async(req, res, next) => {
+  const users = await User.find()
 
-}
+  res.status(200).json({
+    status: 'success',
+    data: users
+  })
+})
