@@ -1,5 +1,9 @@
 const express = require('express')
 const router = express.Router()
+const reviewRouter =  require('../routes/reviews')
+
+router.use('/:tourId/reviews', reviewRouter)
+
 const {
   getAllTours,
   createTour,

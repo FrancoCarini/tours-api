@@ -4,6 +4,9 @@ const dotenv = require('dotenv')
 const mongoose = require('mongoose')
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
+const mongoSanitize = require('express-mongo-sanitize')
+const xss = require('xss-clean')
+const hpp = require('hpp')
 const AppError = require('./utils/appError')
 const errorHandler = require('./controllers/errors')
 
@@ -12,8 +15,12 @@ dotenv.config({path: './config/config.env'})
 // Routes
 const tourRouter = require('./routes/tours')
 const userRouter = require('./routes/users')
+const reviewRouter = require('./routes/reviews')
 
 const app = express()
+
+// Body Parser
+app.use(express.json({limit: '10kb'}))
 
 // Helmet security http headers
 app.use(helmet())
@@ -35,11 +42,25 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP. Please try again in an hour'
 })
-
 app.use('/api', limiter)
 
-// Body Parser
-app.use(express.json())
+// Data sanitization against NoSql query Injection
+app.use(mongoSanitize())
+
+// Data sanitization against XSS
+app.use(xss())
+
+// HPP Http Parameter Pollution
+app.use(hpp({
+  whitelist: [
+    'duration',
+    'ratingQuantity',
+    'ratingsAverage',
+    'difficulty',
+    'maxGroupSize',
+    'price'
+  ]
+}))
 
 // DB Connect
 mongoose.connect(process.env.DATABASE, { 
@@ -54,6 +75,7 @@ mongoose.connect(process.env.DATABASE, {
 // Mount Routes
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/reviews', reviewRouter)
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`, 404))

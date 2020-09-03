@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const slugify = require('slugify')
+const { compareSync } = require('bcryptjs')
 
 const TourSchema = new mongoose.Schema({
   name: {
@@ -68,7 +69,36 @@ const TourSchema = new mongoose.Schema({
     default: Date.now(),
     select: false
   },
-  startDates: [Date]
+  startDates: [Date],
+  startLocation: {
+    type: {
+      type: String,
+      default: 'Point',
+      enum: ['Point']
+    },
+    coordinates: [Number],
+    address: String,
+    description: String
+  },
+  locations: [
+    {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number
+    }
+  ],
+  guides: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User'
+    }
+  ]
 }, {
   toJSON: {
     virtuals: true
@@ -82,8 +112,24 @@ TourSchema.virtual('durationWeeks').get(function(){
   return this.duration / 7
 })
 
+// Virtual Review Populate
+TourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
+})
+
 TourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true })
+  next()
+})
+
+TourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
+  })
+  
   next()
 })
 
