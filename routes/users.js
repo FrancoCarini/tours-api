@@ -3,7 +3,8 @@ const router = express.Router()
 const {
   updateMe,
   deleteMe,
-  getAllUsers
+  getAllUsers,
+  deleteUser
 } = require('../controllers/users')
 
 const {
@@ -28,5 +29,9 @@ router.patch('/updateMe', protect, updateMe)
 router.delete('/deleteMe', protect, deleteMe)
 
 router.get('/', getAllUsers)
+
+router
+  .route('/:id')
+  .delete(deleteUser)
 
 module.exports = router

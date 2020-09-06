@@ -1,5 +1,6 @@
 const Review = require('../models/Review')
 const catchAsync = require('../utils/catchAsync')
+const factory = require('./handlerFactory')
 
 exports.createReview = catchAsync(async(req, res, next) => {
   // Nested Route
@@ -28,3 +29,5 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
       data: reviews
     })
 })
+
+exports.deleteReview = factory.deleteOne(Review)
