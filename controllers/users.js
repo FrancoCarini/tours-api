@@ -43,17 +43,16 @@ exports.deleteMe = catchAsync(async(req, res, next) => {
   })
 })
 
-exports.getAllUsers = catchAsync(async(req, res, next) => {
-  const users = await User.find()
+exports.getAllUsers = factory.getAll(User)
 
-  res.status(200).json({
-    status: 'success',
-    data: users
-  })
-})
-
+exports.getUser = factory.getOne(User)
 
 exports.deleteUser = factory.deleteOne(User)
 
 // Do not update passwords with this
 exports.updateUser = factory.updateOne(User)
+
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id
+  next()
+}

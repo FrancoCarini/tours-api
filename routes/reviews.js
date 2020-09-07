@@ -6,7 +6,8 @@ const {
   createReview,
   getAllReviews,
   deleteReview,
-  setTourUserIds
+  setTourUserIds,
+  getReview
 } = require('../controllers/reviews')
 
 const { protect, restrictTo } = require('../controllers/auth')
@@ -18,6 +19,7 @@ router
 
 router
   .route('/:id')
+  .get(getReview)
   .delete(deleteReview)
 
 module.exports = router
