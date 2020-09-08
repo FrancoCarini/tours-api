@@ -7,19 +7,23 @@ const {
   getAllReviews,
   deleteReview,
   setTourUserIds,
-  getReview
+  getReview,
+  updateReview
 } = require('../controllers/reviews')
 
 const { protect, restrictTo } = require('../controllers/auth')
 
+router.use(protect)
+
 router
   .route('/')
   .get(getAllReviews)
-  .post(protect, restrictTo('user'), setTourUserIds,createReview)
+  .post(restrictTo('user'), setTourUserIds,createReview)
 
 router
   .route('/:id')
   .get(getReview)
-  .delete(deleteReview)
+  .delete(restrictTo('user', 'admin'), deleteReview)
+  .patch(restrictTo('user', 'admin'), updateReview)
 
 module.exports = router

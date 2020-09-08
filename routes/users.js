@@ -6,7 +6,8 @@ const {
   getAllUsers,
   deleteUser,
   getMe,
-  getUser
+  getUser,
+  updateUser
 } = require('../controllers/users')
 
 const {
@@ -15,7 +16,8 @@ const {
   forgotPassword,
   resetPassword,
   updatePassword,
-  protect
+  protect,
+  restrictTo
 } = require('../controllers/auth')
 
 router.post('/signup', signup)
@@ -24,18 +26,24 @@ router.post('/login', login)
 router.post('/forgotPassword', forgotPassword)
 router.patch('/resetPassword/:token', resetPassword)
 
-router.patch('/updateMyPassword', protect, updatePassword)
+router.use(protect)
 
-router.patch('/updateMe', protect, updateMe)
+router.patch('/updateMyPassword', updatePassword)
 
-router.delete('/deleteMe', protect, deleteMe)
+router.patch('/updateMe', updateMe)
 
-router.get('/me', protect, getMe, getUser)
+router.delete('/deleteMe', deleteMe)
+
+router.get('/me', getMe, getUser)
+
+router.use(restrictTo('admin'))
 
 router.get('/', getAllUsers)
 
 router
   .route('/:id')
+  .get(getUser)
   .delete(deleteUser)
+  .patch(updateUser)
 
 module.exports = router
