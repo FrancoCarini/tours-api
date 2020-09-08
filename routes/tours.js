@@ -12,7 +12,9 @@ const {
   deleteTour,
   aliasTopTours,
   getTourStats,
-  getMonthlyPlan
+  getMonthlyPlan,
+  getToursWithin,
+  getDistances
 } = require('../controllers/tours')
 
 const { protect, restrictTo } = require('../controllers/auth')
@@ -21,6 +23,10 @@ router.get('/top-5-cheap', aliasTopTours, getAllTours)
 
 router.get('/tour-stats',getTourStats)
 router.get('/monthly-plan/:year', protect, restrictTo('admin','lead-guide', 'guide'),getMonthlyPlan)
+
+router.get('/tours-within/:distance/center/:latlng/unit/:unit', getToursWithin)
+
+router.get('/distances/:latlng/unit/:unit', getDistances)
 
 router
   .route('/')
