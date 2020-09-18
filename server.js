@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
 const dotenv = require('dotenv')
@@ -7,8 +8,10 @@ const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const hpp = require('hpp')
+const expressLayouts = require('express-ejs-layouts')
 const AppError = require('./utils/appError')
 const errorHandler = require('./controllers/errors')
+
 
 dotenv.config({path: './config/config.env'})
 
@@ -21,6 +24,19 @@ const app = express()
 
 // Body Parser
 app.use(express.json({limit: '10kb'}))
+
+// Use Express Layouts
+app.use(expressLayouts);
+
+// Template Engines
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Set Layout
+app.set('layout', 'layouts/layout');
+
+// Static Files
+app.use(express.static(path.join(__dirname,'public')))
 
 // Helmet security http headers
 app.use(helmet())
@@ -73,6 +89,9 @@ mongoose.connect(process.env.DATABASE, {
 
 
 // Mount Routes
+app.use('/', (req, res) => {
+  res.render('test2')
+})
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
