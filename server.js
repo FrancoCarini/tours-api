@@ -19,6 +19,7 @@ dotenv.config({path: './config/config.env'})
 const tourRouter = require('./routes/tours')
 const userRouter = require('./routes/users')
 const reviewRouter = require('./routes/reviews')
+const viewRouter = require('./routes/views')
 
 const app = express()
 
@@ -89,12 +90,11 @@ mongoose.connect(process.env.DATABASE, {
 
 
 // Mount Routes
-app.use('/', (req, res) => {
-  res.render('test2')
-})
+app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
+
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`, 404))
