@@ -1,6 +1,6 @@
 <%- contentFor('css') %>
-<script src="https://api.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js"></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css" rel="stylesheet" />
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
 
 <%- contentFor('body') %>
 <section class="section-header">
@@ -107,7 +107,7 @@
 </section>
 
 <section class="section-map">
-  <div id="map"></div>
+  <div id="map" data-locations="<%= JSON.stringify(tour.locations) %>"></div>
   <script>
     mapboxgl.accessToken =
       'pk.eyJ1Ijoiam9uYXNzY2htZWR0bWFubiIsImEiOiJjam54ZmM5N3gwNjAzM3dtZDNxYTVlMnd2In0.ytpI7V7w7cyT1Kq5rT9Z1A';

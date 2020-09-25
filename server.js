@@ -9,6 +9,8 @@ const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const hpp = require('hpp')
 const expressLayouts = require('express-ejs-layouts')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
 const AppError = require('./utils/appError')
 const errorHandler = require('./controllers/errors')
 
@@ -26,6 +28,9 @@ const app = express()
 // Body Parser
 app.use(express.json({limit: '10kb'}))
 
+// Cookie Parser
+app.use(cookieParser())
+
 // Use Express Layouts
 app.use(expressLayouts);
 
@@ -39,8 +44,25 @@ app.set('layout', 'layouts/layout');
 // Static Files
 app.use(express.static(path.join(__dirname,'public')))
 
+// CORS
+app.use(cors())
+
 // Helmet security http headers
 app.use(helmet())
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'", 'https:', 'http:','data:', 'ws:'],
+    baseUri: ["'self'"],
+    fontSrc: ["'self'", 'https:','http:', 'data:'],
+    scriptSrc: [
+      "'self'",
+      'https:',
+      'http:',
+      'blob:',
+      'https://*.cloudflare. com'],
+    styleSrc: ["'self'", 'https:', 'http:','unsafe-inline']
+  }
+}))
 
 process.on('uncaughtException', err => {
   console.log(err.name, err.message)
@@ -87,6 +109,11 @@ mongoose.connect(process.env.DATABASE, {
   useUnifiedTopology: true
 })
 .then(() => console.log('Connected to DB'))
+
+app.use((req, res, next) => {
+  console.log(req.cookies)
+  next()
+})
 
 
 // Mount Routes
