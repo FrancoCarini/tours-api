@@ -13,38 +13,63 @@ const getKeyValues = (obj) => {
   return msg.trim()
 }
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    error: err,
-    stack: err.stack
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    // A: API
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+      error: err,
+      stack: err.stack
+    })
+  }
+  
+  // B: Render website
+  return res.status(err.statusCode).render('error', {
+    msg: err.message
   })
 }
 
-const sendErrorProd = (err, res) => {
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    })
-  } else {
-    // Unknown error
-    res.status(500).json({
+const sendErrorProd = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    // A: API
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      })
+    }
+    
+    // A-1: Unknown error
+    return res.status(500).json({
       status: 'error',
       message: 'Something went wrong'
     })
+    
   }
+  
+  if (err.isOperational) {
+    // B: Render website
+    return res.status(err.statusCode).render('error', {
+      msg: err.message
+    })
+  } 
+  
+  // B-1: Unknown error
+  return res.status(err.statusCode).render('error', {
+    msg: 'Please try again later.'
+  })
 }
 
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500
   err.status = err.status || 'error'
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res)
+    sendErrorDev(err, req, res)
   } else if (process.env.NODE_ENV === 'production') {
     let error = {...err}
     error.name = err.name
+    error.message = err.message
     if (error.name === 'CastError') error = new AppError(`Invalid ${error.path}: ${error.value}.`, 400)
     if (error.code === 11000) { 
       const keyValueDuplicated = getKeyValues(error.keyValue)
@@ -53,6 +78,6 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'ValidationError') error = handleValidationErrorDB(error)
     if (error.name === 'JsonWebTokenError') error = new AppError('Invalid Token. Please login again.', 401)
     if (error.name === 'TokenExpiredError') error = new AppError('Token Expired. Please login again.', 401)
-    sendErrorProd(error, res)
+    sendErrorProd(error, req, res)
   }
 }
