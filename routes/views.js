@@ -4,18 +4,21 @@ const router = express.Router()
 const { 
   getOverview, 
   getTour,
-  getLogin } = require('../controllers/views') 
+  getLoginForm,
+  getAccount } = require('../controllers/views') 
 
 const {
-  isLoogedIn
+  isLoogedIn,
+  protect
 } = require('../controllers/auth')
 
-router.use(isLoogedIn)
 
-router.get('/', getOverview)
+router.get('/', isLoogedIn, getOverview)
 
-router.get('/tours/:slug', getTour)
+router.get('/tours/:slug', isLoogedIn, getTour)
 
-router.get('/login', getLogin)
+router.get('/login', isLoogedIn, getLoginForm)
+
+router.get('/me', protect, getAccount)
 
 module.exports = router

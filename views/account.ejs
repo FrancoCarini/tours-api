@@ -1,0 +1,125 @@
+<main class="main">
+  <div class="user-view">
+    <nav class="user-view__menu">
+      <ul class="side-nav">
+        <li class="side-nav--active">
+          <a href="#">
+            <svg>
+              <use xlink:href='img/icons.svg#icon-settings'></use>
+            </svg>| Settings
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <svg>
+              <use xlink:href='img/icons.svg#icon-briefcase'></use>
+            </svg>| My bookings
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <svg>
+              <use xlink:href='img/icons.svg#icon-star'></use>
+            </svg>| My reviews
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <svg>
+              <use xlink:href='img/icons.svg#icon-credit-card'></use>
+            </svg>| Billing
+          </a>
+        </li>
+      </ul>
+      <% if (user.role === 'admin') { %>
+        <div class="admin-nav">
+          <h5 class="admin-nav__heading">
+            Admin
+          </h5>
+          <ul class="side-nav">
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href='img/icons.svg#icon-map'></use>
+                </svg>| Manage tours
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href='img/icons.svg#icon-users'></use>
+                </svg>| Manage users
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href='img/icons.svg#icon-star'></use>
+                </svg>| Manage reviews
+              </a>
+            </li>
+          </ul>
+        </div>
+      <% } %>  
+    </nav> 
+    <div class="user-view__content">
+      <div class="user-view__form-container">
+        <h2 class="heading-secondary ma-bt-md">
+          Your account settings
+        </h2>
+        <form class="form form-user-data">
+          <div class="form__group">
+            <label for="name" class="form__label">
+              Name
+            </label>
+            <input type="text" class="form__input"  id="name" value="<%= user.name %>" required>
+          </div>
+          <div class="form__group ma-bt-md">
+            <label for="email" class="form__label">
+              Email address
+            </label>
+            <input type="email" class="form__input" id="email" value="<%= user.email %>" required>
+          </div>
+          <div class="form__group form__photo-upload">
+            <img src="/img/users/<%= user.photo %>" alt="<%= user.photo %>" class="form__user-photo">
+            <a href="" class="btn-text">Choose new photo</a>
+          </div>
+          <div class="form__group right">
+            <button class="btn btn--small btn--green">
+              Save settings
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="line">&nbsp;</div>
+      <div class="user-view__form-container">
+        <h2 class="heading-secondary ma-bt-md">
+          Password change
+        </h2>
+        <form class="form form-user-settings">
+          <div class="form__group">
+            <label for="password-current" class="form__label">
+              Current password
+            </label>
+            <input type="password" id="password-current" class="form__input" placeholder="••••••••" required, minlength='8'>
+          </div>
+          <div class="form__group">
+            <label for="password" class="form__label">New Password</label>
+            <input type="password" id="password" class="form__input" placeholder="••••••••" required, minlength='8'>
+          </div>
+          <div class="form__group ma-bt-lg">
+            <label for="password-confirm" class="form__label">
+              Confirm password
+            </label>
+            <input type="password" id="password-confirm" class="form__input" placeholder="••••••••" required, minlength='8'>
+          </div>
+          <div class="form__group right">
+            <button class="btn btn--small btn--green">
+              Save Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
