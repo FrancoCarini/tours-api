@@ -110,12 +110,6 @@ mongoose.connect(process.env.DATABASE, {
 })
 .then(() => console.log('Connected to DB'))
 
-app.use((req, res, next) => {
-  console.log(req.cookies)
-  next()
-})
-
-
 // Mount Routes
 app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter)

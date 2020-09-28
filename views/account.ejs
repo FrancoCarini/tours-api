@@ -82,7 +82,10 @@
           </div>
           <div class="form__group form__photo-upload">
             <img src="/img/users/<%= user.photo %>" alt="<%= user.photo %>" class="form__user-photo">
-            <a href="" class="btn-text">Choose new photo</a>
+            <input class="form__upload" type="file" id="photo" name="photo" accept="image/*">
+            <label for="photo">
+              Choose new photo
+            </label>
           </div>
           <div class="form__group right">
             <button class="btn btn--small btn--green">
